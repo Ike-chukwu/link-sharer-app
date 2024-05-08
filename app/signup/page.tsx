@@ -1,9 +1,9 @@
 "use client";
 import Image from "next/image";
-import Logo from "./icons/Logo";
-import GithubIcon from "./icons/GithubIcon";
-import GithubGreyIcon from "./icons/GithubGreyIcon";
-import LargeIcon from "./icons/LargeIcon";
+import Logo from "../icons/Logo";
+import GithubIcon from "../icons/GithubIcon";
+import GithubGreyIcon from "../icons/GithubGreyIcon";
+import LargeIcon from "../icons/LargeIcon";
 import { z } from "zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,24 +12,30 @@ import Link from "next/link";
 // import { useRouter } from "next/navigation";
 
 export default function Home() {
-  const SignInSchema = z.object({
-    email: z.string().email(),
-    password: z.string().min(3).max(20),
-  });
+  const SignUpSchema = z
+    .object({
+      email: z.string().email(),
+      password: z.string().min(3).max(20),
+      confirmPassword: z.string().min(3).max(20),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: "Passwords don't match",
+      path: ["confirmPassword"], // path of error
+    });
 
-  type SignInSchemaType = z.infer<typeof SignInSchema>;
+  type SignUpSchemaType = z.infer<typeof SignUpSchema>;
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<SignInSchemaType>({ resolver: zodResolver(SignInSchema) });
+  } = useForm<SignUpSchemaType>({ resolver: zodResolver(SignUpSchema) });
 
   const router = useRouter();
 
-  const onSubmit: SubmitHandler<SignInSchemaType> = (data) => {
+  const onSubmit: SubmitHandler<SignUpSchemaType> = (data) => {
     console.log(data);
-    router.push("/signup");
+    // router.push("/s");
   };
 
   return (
@@ -40,9 +46,11 @@ export default function Home() {
         className="lg:px-8 w-full lg:w-[430px] py-16 lg:shadow-bShadow space-y-16 rounded-2xl"
       >
         <div className=" lg:px-8 space-y-5">
-          <h1 className="font-bold text-4xl lg:text-5xl capitalize">login</h1>
+          <h1 className="font-bold text-4xl lg:text-5xl capitalize">
+            Create account
+          </h1>
           <p className="text-2xl text-bodyCopyColor">
-            Add your details below to get back into the app
+            Let’s get you started sharing your links!
           </p>
         </div>
         <div className=" lg:px-8 space-y-10">
@@ -77,7 +85,7 @@ export default function Home() {
               <GithubGreyIcon />
               <input
                 type="text"
-                placeholder="Enter your password"
+                placeholder="At least 3 characters"
                 className="text-2xl w-full outline-none "
                 {...register("password")}
               />
@@ -86,18 +94,40 @@ export default function Home() {
               <p className="text-xl text-red-500">{errors.password.message}</p>
             )}
           </div>
+          <div className="space-y-2">
+            <p className="text-xl">Confirm password</p>
+            <div
+              className={
+                "flex w-full gap-6 border-[1px] border-[#D9D9D9] bg-white items-center relative px-4 py-6 rounded-xl " +
+                (errors.confirmPassword && "border-2 border-red-500")
+              }
+            >
+              <GithubGreyIcon />
+              <input
+                type="text"
+                placeholder="At least 3 characters"
+                className="text-2xl w-full outline-none "
+                {...register("confirmPassword")}
+              />
+            </div>
+            {errors.confirmPassword && (
+              <p className="text-xl text-red-500">
+                {errors.confirmPassword.message}
+              </p>
+            )}
+          </div>
 
           <button
             type="submit"
             className="bg-ctaColor text-white w-full rounded-xl py-6 text-2xl"
           >
-            Login
+            Sign Up
           </button>
 
           <p className="text-2xl text-bodyCopyColor text-center ">
-            Don't have an account? <br className="block lg:hidden" />
-            <Link href="/signup">
-              <span className="text-[#beadff]">Create account</span>
+            Already have an account? <br className="block lg:hidden" />
+            <Link href="/">
+              <span className="text-[#beadff]">Login</span>
             </Link>
           </p>
         </div>
