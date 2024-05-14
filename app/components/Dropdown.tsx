@@ -30,13 +30,6 @@ type selectedSocialArg = {
 };
 
 const Dropdown = (props: Props) => {
-  const [isDropdownActive, setDropdownActive] = useState(false);
-
-  const [currentPlatform, setCurrentPlatform] = useState({
-    name: "Github",
-    component: <GithubGreyIcon />,
-  });
-
   const socialsArray = [
     { name: "Github", id: 1, component: <GithubGreyIcon /> },
     { name: "Frontend Mentor", id: 2, component: <FeMentorIcon /> },
@@ -53,6 +46,22 @@ const Dropdown = (props: Props) => {
     { name: "Hashnode", id: 13, component: <Hashnode /> },
     { name: "Stack Overflow", id: 14, component: <StackOverflow /> },
   ];
+
+  const [isDropdownActive, setDropdownActive] = useState(false);
+
+  const [currentPlatform, setCurrentPlatform] = useState(() => {
+    const interestedObj = props.linkInfo.find((info) => info.id == props.id);
+    if (interestedObj) {
+      const pickedObj = socialsArray.find(
+        (socials) => socials.name == interestedObj.platform
+      );
+      return pickedObj;
+    }
+    return {
+      name: "Github",
+      component: <GithubGreyIcon />,
+    };
+  });
 
   const selectSocialLink = (data: selectedSocialArg) => {
     let linkInfoCopy = [...props.linkInfo];
@@ -79,7 +88,7 @@ const Dropdown = (props: Props) => {
   };
 
   useEffect(() => {
-    console.log(props.linkInfo);
+    // console.log(props.linkInfo);
   }),
     [props.linkInfo];
 
@@ -131,7 +140,6 @@ const Dropdown = (props: Props) => {
 };
 
 export default Dropdown;
-
 
 // main data structure
 // totalUsersArray = [

@@ -9,7 +9,6 @@ import PreviewIcon from "../icons/PreviewIcon";
 import { usePathname } from "next/navigation";
 
 const Navbar = () => {
-  const [activeLink, setActiveLink] = useState("links");
   const pathname = usePathname();
 
   return (
@@ -24,13 +23,12 @@ const Navbar = () => {
               "px-10 py-5 transition ease-in-out duration-[.5s]  hover:bg-[#EFEBFF] outline-none flex items-center justify-center gap-3 rounded-xl " +
               (pathname === "/link" ? "bg-[#EFEBFF]" : null)
             }
-            onClick={() => setActiveLink("links")}
           >
-            <IconLink/>
+            <IconLink />
             <span
               className={
                 "hidden  lg:block text-2xl capitalize font-bold " +
-                (pathname === "links" ? "text-ctaColor" : "text-bodyCopyColor")
+                (pathname === "/link" ? "text-ctaColor" : "text-bodyCopyColor")
               }
             >
               links
@@ -43,10 +41,8 @@ const Navbar = () => {
               "px-10 transition ease-in-out duration-[.5s] hover:bg-[#EFEBFF] py-5 flex outline-none items-center gap-3 rounded-xl " +
               (pathname === "/profile" ? "bg-[#EFEBFF]" : null)
             }
-            onClick={() => setActiveLink("profile")}
           >
-            <ProfileDetailsIcon
-            />
+            <ProfileDetailsIcon />
             <span
               className={
                 "hidden lg:block text-2xl capitalize font-bold " +

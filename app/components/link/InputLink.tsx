@@ -11,8 +11,12 @@ type Props = {
 };
 
 const InputLink = (props: Props) => {
-  const [inputValue, setInputValue] = useState("");
-
+  const [inputValue, setInputValue] = useState(() => {
+    const foundInfo = props.linkInfo.find((info) => info.id === props.id);
+    return foundInfo ? foundInfo.link : "";
+  });
+  console.log(props.linkInfo);
+  
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
     const value = e.target.value;
