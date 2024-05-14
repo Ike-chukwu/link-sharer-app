@@ -2,6 +2,7 @@
 import IconLink from "@/app/icons/IconLink";
 import PhoneMockup from "@/app/icons/PhoneMockup";
 import UploadIcon from "@/app/icons/UploadIcon";
+import { userDataStore } from "@/app/store/userdatastore";
 import React, { useEffect, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 
@@ -12,23 +13,41 @@ const Profile = () => {
     email: string;
   }
 
+  interface ProfileDetails extends IFormInput {
+    imgUrl: string;
+    selectedFile: any;
+  }
+
+  const personalInfoHolder = userDataStore(
+    (state: any) => state.userData.personalDetails
+  );
+
+  const updatelistOfLinksArrayHandler = userDataStore(
+    (state: any) => state.savePersonalDetails
+  );
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<IFormInput>();
 
-  const [selectedFile, setSelectedFile] = useState();
-  const [preview, setPreview] = useState<any>();
+  const [selectedFile, setSelectedFile] = useState(
+    personalInfoHolder.selectedFile
+  );
+  const [imgUrl, setimgUrl] = useState<any>(personalInfoHolder.imgUrl);
+  const [finalValuesFromForm, setFinalValuesFrom] =
+    useState<ProfileDetails>(personalInfoHolder);
+  console.log(personalInfoHolder);
 
   // create a preview as a side effect, whenever selected file is changed
   useEffect(() => {
     if (!selectedFile) {
-      setPreview(undefined);
+      setimgUrl(undefined);
       return;
     }
     const objectUrl = URL.createObjectURL(selectedFile);
-    setPreview(objectUrl);
+    setimgUrl(objectUrl);
 
     // free memory when ever this component is unmounted
     return () => URL.revokeObjectURL(objectUrl);
@@ -43,7 +62,9 @@ const Profile = () => {
   };
 
   const onSubmit: SubmitHandler<IFormInput> = (data) => {
-    const finalValuesFromForm = { ...data, preview };
+    const finalValuesFromForm = { ...data, imgUrl, selectedFile };
+    setFinalValuesFrom(finalValuesFromForm);
+    updatelistOfLinksArrayHandler(finalValuesFromForm);
     console.log(finalValuesFromForm);
   };
 
@@ -78,7 +99,7 @@ const Profile = () => {
               {selectedFile && (
                 <div className="width-full h-full absolute z-1 top-[0%] left-[0%]">
                   {selectedFile && (
-                    <img className="width-full h-full" src={preview} />
+                    <img className="width-full h-full" src={imgUrl} />
                   )}
                 </div>
               )}
@@ -110,6 +131,7 @@ const Profile = () => {
               </span>
               <div className="lg:w-4/5">
                 <input
+                  defaultValue={finalValuesFromForm.firstName}
                   {...register("firstName", {
                     required: "Firstname is required",
                     pattern: {
@@ -139,6 +161,7 @@ const Profile = () => {
               </span>
               <div className="lg:w-4/5">
                 <input
+                  defaultValue={finalValuesFromForm.lastName}
                   {...register("lastName", {
                     required: "Lastname is required",
                     pattern: {
@@ -167,6 +190,7 @@ const Profile = () => {
               </span>
               <div className="lg:w-4/5">
                 <input
+                  defaultValue={finalValuesFromForm.email}
                   {...register("email", {
                     pattern: {
                       value: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,

@@ -13,11 +13,11 @@ export const userDataStore = create((set) => ({
             firstName: "",
             lastName: "",
             email: "",
-            imageUrl: ""
+            imageUrl: "",
+            selectedFile: ""
         }
     },
     saveLink: (linkList: any) => {
-        console.log("saveLink function called with:", linkList);
         set((state: any) => ({
             userData: {
                 ...state.userData,
