@@ -1,8 +1,15 @@
 import React from "react";
 
-const GithubIcon = () => {
+type Props = {
+  x?: string;
+  y?: string;
+};
+
+const GithubIcon = (props: Props) => {
   return (
     <svg
+      x={props.x}
+      y={props.y}
       xmlns="http://www.w3.org/2000/svg"
       width="16"
       height="16"

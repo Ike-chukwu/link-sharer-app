@@ -1,8 +1,15 @@
 import React from "react";
 
-const StackOverflow = () => {
+type Props = {
+  x?: string;
+  y?: string;
+};
+
+const StackOverflow = (props: Props) => {
   return (
     <svg
+      x={props.x}
+      y={props.y}
       width="16"
       height="17"
       viewBox="0 0 16 17"

@@ -1,8 +1,15 @@
 import React from "react";
 
-const ChevronIcon = () => {
+type Props = {
+  x?: string;
+  y?: string;
+};
+
+const ChevronIcon = (props: Props) => {
   return (
     <svg
+      x={props.x}
+      y={props.y}
       xmlns="http://www.w3.org/2000/svg"
       width="16"
       height="16"

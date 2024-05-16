@@ -1,8 +1,15 @@
 import React from "react";
 
-const Fb = () => {
+type Props = {
+  x?: string;
+  y?: string;
+};
+
+const Fb = (props: Props) => {
   return (
     <svg
+      x={props.x}
+      y={props.y}
       width="16"
       height="16"
       viewBox="0 0 16 16"

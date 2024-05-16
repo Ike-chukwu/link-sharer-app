@@ -1,8 +1,16 @@
 import React from "react";
 
-const FeMentorIcon = () => {
+type Props = {
+  x?: string;
+  y?: string;
+  fill?: string;
+};
+
+const FeMentorIcon = (props: Props) => {
   return (
     <svg
+      x={props.x}
+      y={props.y}
       width="16"
       height="16"
       viewBox="0 0 16 16"
