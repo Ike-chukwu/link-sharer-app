@@ -19,7 +19,7 @@ const Devto = (props: Props) => {
       <g clip-path="url(#clip0_86_26215)">
         <path
           d="M12.25 0H3.75C1.67893 0 0 1.67893 0 3.75V12.25C0 14.3211 1.67893 16 3.75 16H12.25C14.3211 16 16 14.3211 16 12.25V3.75C16 1.67893 14.3211 0 12.25 0Z"
-          fill="#737373"
+          fill={props.x ? "white" : "#737373"}
         />
         <path
           fill-rule="evenodd"

@@ -100,11 +100,8 @@ const Link = () => {
             d="M12 55.5C12 30.923 31.923 11 56.5 11h24C86.851 11 92 16.149 92 22.5c0 8.008 6.492 14.5 14.5 14.5h95c8.008 0 14.5-6.492 14.5-14.5 0-6.351 5.149-11.5 11.5-11.5h24c24.577 0 44.5 19.923 44.5 44.5v521c0 24.577-19.923 44.5-44.5 44.5h-195C31.923 621 12 601.077 12 576.5v-521Z"
           />
           <circle cx="153.5" cy="112" r="48" fill="#EEE" />
-          <rect width="160" height="16" x="73.5" y="185" fill="#EEE" rx="8" />
-          <rect width="72" height="8" x="117.5" y="214" fill="#EEE" rx="4" />
-          {linkInfo.map((info: any, index: number) => {
-            return;
-          })}
+          <rect width="237" height="16" x="35" y="185" fill="#EEE" rx="8" />
+          <rect width="237" height="8" x="35" y="214" fill="#EEE" rx="4" />
 
           <g>
             <rect
@@ -132,9 +129,12 @@ const Link = () => {
               {linkInfo.length > 0 && linkInfo[0].platform}
             </text>
             {linkInfo.length > 0 &&
-              (socialsArrayWithPosition.find(
-                (socialPlatform) => socialPlatform.name === linkInfo[0].platform
-              )?.component ||
+              (socialsArrayWithPosition
+                .find(
+                  (socialPlatform) =>
+                    socialPlatform.name === linkInfo[0].platform
+                )
+                ?.component("50", "290") ||
                 null)}
             {linkInfo.length > 0 && <ChevronIcon x="240" y="292" />}
           </g>
@@ -164,9 +164,12 @@ const Link = () => {
               {linkInfo.length > 1 && linkInfo[1].platform}
             </text>
             {linkInfo.length > 1 &&
-              (socialsArrayWithPosition.find(
-                (socialPlatform) => socialPlatform.name === linkInfo[1].platform
-              )?.component ||
+              (socialsArrayWithPosition
+                .find(
+                  (socialPlatform) =>
+                    socialPlatform.name === linkInfo[1].platform
+                )
+                ?.component("50", "354") ||
                 null)}
             {linkInfo.length > 1 && <ChevronIcon x="240" y="356" />}
           </g>
@@ -196,9 +199,12 @@ const Link = () => {
               {linkInfo.length > 2 && linkInfo[2].platform}
             </text>
             {linkInfo.length > 2 &&
-              (socialsArrayWithPosition.find(
-                (socialPlatform) => socialPlatform.name === linkInfo[2].platform
-              )?.component ||
+              (socialsArrayWithPosition
+                .find(
+                  (socialPlatform) =>
+                    socialPlatform.name === linkInfo[2].platform
+                )
+                ?.component("50", "418") ||
                 null)}
             {linkInfo.length > 2 && <ChevronIcon x="240" y="420" />}
           </g>
@@ -228,9 +234,12 @@ const Link = () => {
               {linkInfo.length > 3 && linkInfo[3].platform}
             </text>
             {linkInfo.length > 3 &&
-              (socialsArrayWithPosition.find(
-                (socialPlatform) => socialPlatform.name === linkInfo[3].platform
-              )?.component ||
+              (socialsArrayWithPosition
+                .find(
+                  (socialPlatform) =>
+                    socialPlatform.name === linkInfo[3].platform
+                )
+                ?.component("50", "482") ||
                 null)}
             {linkInfo.length > 3 && <ChevronIcon x="240" y="484" />}
           </g>
@@ -260,9 +269,12 @@ const Link = () => {
               {linkInfo.length > 4 && linkInfo[4].platform}
             </text>
             {linkInfo.length > 4 &&
-              (socialsArrayWithPosition.find(
-                (socialPlatform) => socialPlatform.name === linkInfo[4].platform
-              )?.component ||
+              (socialsArrayWithPosition
+                .find(
+                  (socialPlatform) =>
+                    socialPlatform.name === linkInfo[4].platform
+                )
+                ?.component("50", "546") ||
                 null)}
             {linkInfo.length > 4 && <ChevronIcon x="240" y="548" />}
           </g>

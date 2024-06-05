@@ -1,4 +1,6 @@
 "use client";
+import { socialsArrayWithPosition } from "@/app/constants";
+import ChevronIcon from "@/app/icons/ChevronIcon";
 import IconLink from "@/app/icons/IconLink";
 import PhoneMockup from "@/app/icons/PhoneMockup";
 import UploadIcon from "@/app/icons/UploadIcon";
@@ -22,12 +24,15 @@ const Profile = () => {
     (state: any) => state.userData.personalDetails
   );
 
-  const updatelistOfLinksArrayHandler = userDataStore(
+  const linkInfo = userDataStore((state: any) => state.userData.listOfLinks);
+
+  const updateProfileDetailsHandler = userDataStore(
     (state: any) => state.savePersonalDetails
   );
 
   const {
     register,
+    watch,
     handleSubmit,
     formState: { errors },
   } = useForm<IFormInput>();
@@ -42,6 +47,8 @@ const Profile = () => {
 
   // create a preview as a side effect, whenever selected file is changed
   useEffect(() => {
+    console.log(finalValuesFromForm);
+    
     if (!selectedFile) {
       setimgUrl(undefined);
       return;
@@ -64,14 +71,269 @@ const Profile = () => {
   const onSubmit: SubmitHandler<IFormInput> = (data) => {
     const finalValuesFromForm = { ...data, imgUrl, selectedFile };
     setFinalValuesFrom(finalValuesFromForm);
-    updatelistOfLinksArrayHandler(finalValuesFromForm);
-    console.log(finalValuesFromForm);
+    updateProfileDetailsHandler(finalValuesFromForm);
+    console.log(data.firstName);
   };
+
+  const watchFirstName = watch("firstName") || "";
+  const watchLastName = watch("lastName") || "";
+  const watchEmail = watch("email") || "";
+  console.log(watchFirstName);
 
   return (
     <div className="px-8 lg:px-0 flex gap-10 items-start">
       <div className="hidden lg:flex w-2/5 rounded-xl items-center justify-center min-h-[800px] p-10 bg-white">
-        <PhoneMockup />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="308"
+          height="632"
+          fill="none"
+          viewBox="0 0 308 632"
+        >
+          <path
+            stroke="#737373"
+            d="M1 54.5C1 24.953 24.953 1 54.5 1h199C283.047 1 307 24.953 307 54.5v523c0 29.547-23.953 53.5-53.5 53.5h-199C24.953 631 1 607.047 1 577.5v-523Z"
+          />
+          <path
+            fill="#fff"
+            stroke="#737373"
+            d="M12 55.5C12 30.923 31.923 11 56.5 11h24C86.851 11 92 16.149 92 22.5c0 8.008 6.492 14.5 14.5 14.5h95c8.008 0 14.5-6.492 14.5-14.5 0-6.351 5.149-11.5 11.5-11.5h24c24.577 0 44.5 19.923 44.5 44.5v521c0 24.577-19.923 44.5-44.5 44.5h-195C31.923 621 12 601.077 12 576.5v-521Z"
+          />
+
+          {finalValuesFromForm.imgUrl == undefined && imgUrl == "" ? (
+            <circle cx="153.5" cy="112" r="48" fill="#EEE" />
+          ) : (
+            <>
+              <defs>
+                <clipPath id="myCircle">
+                  <circle cx="153.5" cy="112" r="48" fill="#FFFFFF" />
+                </clipPath>
+              </defs>
+              <image
+                width="500"
+                height="350"
+                xlinkHref={imgUrl}
+                clip-path="url(#myCircle)"
+              />
+            </>
+          )}
+          <g>
+            <rect
+              width="237"
+              height="16"
+              x="35"
+              y="185"
+              fill={
+                finalValuesFromForm.firstName == "" &&
+                watchFirstName == "" &&
+                finalValuesFromForm.lastName == "" &&
+                watchLastName == ""
+                  ? "#EEE"
+                  : undefined
+              }
+              rx="8"
+            />
+            <text
+              x="35"
+              y="200"
+              font-family="Verdana"
+              font-size="16"
+              font-weight="500"
+              fill="black"
+              text-align="center"
+            >
+              {finalValuesFromForm.firstName == ""
+                ? `${watchFirstName} ${watchLastName}`
+                : `${finalValuesFromForm.firstName} ${finalValuesFromForm.lastName}`}
+            </text>
+          </g>
+          <g>
+            <rect
+              width="237"
+              height="8"
+              x="35"
+              y="214"
+              fill={
+                finalValuesFromForm.email == "" && watchEmail == ""
+                  ? "#EEE"
+                  : undefined
+              }
+              rx="4"
+            />
+            <text
+              x="35"
+              y="225"
+              font-family="Verdana"
+              font-size="13"
+              font-weight="500"
+              fill="black"
+            >
+              {finalValuesFromForm.email == ""
+                ? watchEmail
+                : finalValuesFromForm.email}
+            </text>
+          </g>
+          <g>
+            <rect
+              x="35"
+              y="278"
+              width="237"
+              height="44"
+              fill={
+                socialsArrayWithPosition.find(
+                  (socialPlatform) =>
+                    socialPlatform.name === linkInfo[0]?.platform
+                )?.color
+              }
+              rx="8"
+            ></rect>
+            <text
+              x="72"
+              y="305"
+              font-family="Verdana"
+              font-size="14"
+              fill="white"
+            >
+              {linkInfo[0]?.platform}
+            </text>
+            {socialsArrayWithPosition
+              .find(
+                (socialPlatform) =>
+                  socialPlatform.name === linkInfo[0]?.platform
+              )
+              ?.component("50", "290") || null}
+            {linkInfo.length > 0 && <ChevronIcon x="240" y="292" />}
+          </g>
+          <g>
+            <rect
+              x="35"
+              y="342"
+              width="237"
+              height="44"
+              fill={
+                socialsArrayWithPosition.find(
+                  (socialPlatform) =>
+                    socialPlatform.name === linkInfo[1]?.platform
+                )?.color
+              }
+              rx="8"
+            ></rect>
+            <text
+              x="72"
+              y="369"
+              font-family="Verdana"
+              font-size="14"
+              fill="white"
+            >
+              {linkInfo[1]?.platform}
+            </text>
+            {socialsArrayWithPosition
+              .find(
+                (socialPlatform) =>
+                  socialPlatform.name === linkInfo[1]?.platform
+              )
+              ?.component("50", "354") || null}
+            {linkInfo.length > 1 && <ChevronIcon x="240" y="356" />}
+          </g>
+          <g>
+            <rect
+              x="35"
+              y="406"
+              width="237"
+              height="44"
+              fill={
+                socialsArrayWithPosition.find(
+                  (socialPlatform) =>
+                    socialPlatform.name === linkInfo[2]?.platform
+                )?.color
+              }
+              rx="8"
+            ></rect>
+            <text
+              x="72"
+              y="433"
+              font-family="Verdana"
+              font-size="14"
+              fill="white"
+            >
+              {linkInfo[2]?.platform}
+            </text>
+            {socialsArrayWithPosition
+              .find(
+                (socialPlatform) =>
+                  socialPlatform.name === linkInfo[2]?.platform
+              )
+              ?.component("50", "418") || null}
+            {linkInfo.length > 2 && <ChevronIcon x="240" y="420" />}
+          </g>
+          <g>
+            <rect
+              x="35"
+              y="470"
+              width="237"
+              height="44"
+              fill={
+                socialsArrayWithPosition.find(
+                  (socialPlatform) =>
+                    socialPlatform.name === linkInfo[3]?.platform
+                )?.color
+              }
+              rx="8"
+            ></rect>
+            <text
+              x="72"
+              y="497"
+              font-family="Verdana"
+              font-size="14"
+              fill="white"
+            >
+              {linkInfo[3]?.platform}
+            </text>
+            {socialsArrayWithPosition
+              .find(
+                (socialPlatform) =>
+                  socialPlatform.name === linkInfo[3]?.platform
+              )
+              ?.component("50", "482")}
+            {linkInfo.length > 3 && <ChevronIcon x="240" y="484" />}
+          </g>
+          <g>
+            <rect
+              x="35"
+              y="534"
+              width="237"
+              height="44"
+              fill={
+                socialsArrayWithPosition.find(
+                  (socialPlatform) =>
+                    socialPlatform.name === linkInfo[4]?.platform
+                )?.color
+              }
+              rx="8"
+            ></rect>
+            <text
+              x="72"
+              y="561"
+              font-family="Verdana"
+              font-size="14"
+              fill="white"
+            >
+              {linkInfo[4]?.platform}
+            </text>
+            {socialsArrayWithPosition
+              .find(
+                (socialPlatform) =>
+                  socialPlatform.name === linkInfo[4]?.platform
+              )
+              ?.component("50", "546")}
+            {linkInfo.length > 4 && <ChevronIcon x="240" y="548" />}
+          </g>
+          {/* <rect width="237" height="44" x="35" y="278" fill="#EEE" rx="8" /> */}
+          {/* <rect width="237" height="44" x="35" y="342" fill="#EEE" rx="8" /> */}
+          {/* <rect width="237" height="44" x="35" y="406" fill="#EEE" rx="8" /> */}
+          {/* <rect width="237" height="44" x="35" y="470" fill="#EEE" rx="8" /> */}
+          {/* <rect width="237" height="44" x="35" y="534" fill="#EEE" rx="8" /> */}
+        </svg>
       </div>
       <form
         onSubmit={handleSubmit(onSubmit)}
