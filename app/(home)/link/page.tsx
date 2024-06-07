@@ -25,8 +25,22 @@ interface linkInput {
   actualLink: string;
 }
 
+interface IFormInput {
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
+interface ProfileDetails extends IFormInput {
+  imgUrl: string;
+  selectedFile: any;
+}
+
 const Link = () => {
   const linksArray = userDataStore((state: any) => state.userData.listOfLinks);
+  const profileDetails = userDataStore(
+    (state: any) => state.userData.personalDetails
+  );
   const updatelistOfLinksArrayHandler = userDataStore(
     (state: any) => state.saveLink
   );
@@ -37,6 +51,10 @@ const Link = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<linkInput>();
+  const [selectedFile, setSelectedFile] = useState(profileDetails.selectedFile);
+  const [imgUrl, setimgUrl] = useState<any>(profileDetails.imgUrl);
+  const [finalValuesFromForm, setFinalValuesFrom] =
+    useState<ProfileDetails>(profileDetails);
 
   const onSubmit: SubmitHandler<linkInput> = (data) => console.log(data);
 
@@ -80,6 +98,19 @@ const Link = () => {
     console.log(linkInfo);
   }, [linksArray]);
 
+  useEffect(() => {
+    if (!selectedFile) {
+      setimgUrl(undefined);
+      return;
+    }
+    const objectUrl = URL.createObjectURL(profileDetails.selectedFile);
+    setimgUrl(objectUrl);
+
+    // free memory when ever this component is unmounted
+    console.log(imgUrl);
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [selectedFile]);
+
   return (
     <div className="px-8 lg:px-0 flex gap-10 items-start">
       <div className="hidden lg:flex w-2/5 rounded-xl items-center justify-center min-h-[800px] p-10 bg-white">
@@ -99,10 +130,70 @@ const Link = () => {
             stroke="#737373"
             d="M12 55.5C12 30.923 31.923 11 56.5 11h24C86.851 11 92 16.149 92 22.5c0 8.008 6.492 14.5 14.5 14.5h95c8.008 0 14.5-6.492 14.5-14.5 0-6.351 5.149-11.5 11.5-11.5h24c24.577 0 44.5 19.923 44.5 44.5v521c0 24.577-19.923 44.5-44.5 44.5h-195C31.923 621 12 601.077 12 576.5v-521Z"
           />
-          <circle cx="153.5" cy="112" r="48" fill="#EEE" />
-          <rect width="237" height="16" x="35" y="185" fill="#EEE" rx="8" />
-          <rect width="237" height="8" x="35" y="214" fill="#EEE" rx="4" />
-
+          {profileDetails.imgUrl == undefined && imgUrl == undefined ? (
+            <circle cx="153.5" cy="112" r="48" fill="#EEE" />
+          ) : (
+            <>
+              <defs>
+                <clipPath id="myCircle">
+                  <circle cx="153.5" cy="112" r="48" fill="#FFFFFF" />
+                </clipPath>
+              </defs>
+              <image
+                width="500"
+                height="350"
+                xlinkHref={imgUrl}
+                clip-path="url(#myCircle)"
+              />
+            </>
+          )}{" "}
+          <g>
+            <rect
+              width="237"
+              height="16"
+              x="35"
+              y="185"
+              fill={
+                profileDetails.firstName == "" && profileDetails.lastName == ""
+                  ? "#EEE"
+                  : undefined
+              }
+              rx="8"
+            />
+            <text
+              x="35"
+              y="200"
+              font-family="Verdana"
+              font-size="16"
+              font-weight="500"
+              fill="black"
+              text-align="center"
+            >
+              {profileDetails.firstName == ""
+                ? ``
+                : `${profileDetails.firstName} ${profileDetails.lastName}`}
+            </text>
+          </g>
+          <g>
+            <rect
+              width="237"
+              height="8"
+              x="35"
+              y="214"
+              fill={profileDetails.email == "" ? "#EEE" : undefined}
+              rx="4"
+            />
+            <text
+              x="35"
+              y="225"
+              font-family="Verdana"
+              font-size="13"
+              font-weight="500"
+              fill="black"
+            >
+              {profileDetails.email == "" ? `` : profileDetails.email}
+            </text>
+          </g>{" "}
           <g>
             <rect
               x="35"
