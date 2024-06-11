@@ -1,40 +1,15 @@
 "use client";
 import Dropdown from "@/app/components/Dropdown";
-import ChevronDown from "@/app/icons/ChevronDown";
 import ChevronIcon from "@/app/icons/ChevronIcon";
-import GithubGreyIcon from "@/app/icons/GithubGreyIcon";
-import GithubIcon from "@/app/icons/GithubIcon";
 import IconLink from "@/app/icons/IconLink";
 import React, { useEffect, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-import isUrl from "is-url";
 import Empty from "@/app/icons/Empty";
 import InputLink from "@/app/components/link/InputLink";
 import { v4 as uuidv4 } from "uuid";
-import PhoneMockup from "@/app/icons/PhoneMockup";
 import { userDataStore } from "@/app/store/userdatastore";
-import { socialsArray, socialsArrayWithPosition } from "@/app/constants";
-
-export type arrayofLinks = {
-  id: string;
-  platform: string | undefined;
-  link: string;
-}[];
-
-interface linkInput {
-  actualLink: string;
-}
-
-interface IFormInput {
-  firstName: string;
-  lastName: string;
-  email: string;
-}
-
-interface ProfileDetails extends IFormInput {
-  imgUrl: string;
-  selectedFile: any;
-}
+import { socialsArrayWithPosition } from "@/app/constants";
+import { linkInput, linkObjType } from "@/app/types";
 
 const Link = () => {
   const linksArray = userDataStore((state: any) => state.userData.listOfLinks);
@@ -53,10 +28,6 @@ const Link = () => {
   } = useForm<linkInput>();
   const [selectedFile, setSelectedFile] = useState(profileDetails.selectedFile);
   const [imgUrl, setimgUrl] = useState<any>(profileDetails.imgUrl);
-  const [finalValuesFromForm, setFinalValuesFrom] =
-    useState<ProfileDetails>(profileDetails);
-
-  const onSubmit: SubmitHandler<linkInput> = (data) => console.log(data);
 
   const addNewLinkHandler = () => {
     if (linkInfo.length >= 5) {
@@ -68,8 +39,19 @@ const Link = () => {
         link: "",
       };
       setLinkInfo([...linkInfo, newLinkObj]);
-      // console.log(linksArray);
     }
+  };
+
+  const removeLinkHandler = (id: string) => {
+    const filteredArray = linkInfo.filter(
+      (info: linkObjType) => info.id !== id
+    );
+    setLinkInfo(filteredArray);
+  };
+
+  const saveData = (e: any) => {
+    e.preventDefault();
+    updatelistOfLinksArrayHandler(linkInfo);
   };
 
   useEffect(() => {
@@ -77,25 +59,6 @@ const Link = () => {
     console.log(linkInfo);
     console.log(linksArray);
     // Update linkInfo whenever linksArray changes
-  }, [linksArray]);
-
-  const removeLinkHandler = (id: string) => {
-    const filteredArray = linkInfo.filter((info) => info.id !== id);
-    setLinkInfo(filteredArray);
-  };
-
-  const saveData = (e: any) => {
-    e.preventDefault();
-    console.log(linkInfo);
-    updatelistOfLinksArrayHandler(linkInfo);
-    console.log(linksArray);
-  };
-
-  const renderSelectedIcon = () => {};
-
-  useEffect(() => {
-    console.log(linksArray);
-    console.log(linkInfo);
   }, [linksArray]);
 
   useEffect(() => {
@@ -107,7 +70,6 @@ const Link = () => {
     setimgUrl(objectUrl);
 
     // free memory when ever this component is unmounted
-    console.log(imgUrl);
     return () => URL.revokeObjectURL(objectUrl);
   }, [selectedFile]);
 
@@ -146,7 +108,7 @@ const Link = () => {
                 clip-path="url(#myCircle)"
               />
             </>
-          )}{" "}
+          )}
           <g>
             <rect
               width="237"
@@ -369,14 +331,8 @@ const Link = () => {
                 null)}
             {linkInfo.length > 4 && <ChevronIcon x="240" y="548" />}
           </g>
-          {/* <rect width="237" height="44" x="35" y="278" fill="#EEE" rx="8" /> */}
-          {/* <rect width="237" height="44" x="35" y="342" fill="#EEE" rx="8" /> */}
-          {/* <rect width="237" height="44" x="35" y="406" fill="#EEE" rx="8" /> */}
-          {/* <rect width="237" height="44" x="35" y="470" fill="#EEE" rx="8" /> */}
-          {/* <rect width="237" height="44" x="35" y="534" fill="#EEE" rx="8" /> */}
         </svg>
       </div>
-      {/* {children} */}
       <form
         onSubmit={saveData}
         className={
@@ -418,7 +374,7 @@ const Link = () => {
                 </p>
               </div>
             ) : (
-              linkInfo.map((info, index) => (
+              linkInfo.map((info: linkObjType, index: string) => (
                 <div
                   key={info.id.toString()}
                   className="bg-[#FAFAFA] py-10 px-8 space-y-8 rounded-xl"
@@ -457,19 +413,6 @@ const Link = () => {
                         linkInfo={linkInfo}
                         setLinkInfo={setLinkInfo}
                       />
-                      {/* <input
-                      {...register("actualLink", {
-                        required: "Cannot be empty",
-                        pattern: {
-                          value: /^(ftp|http|https):\/\/[^ "]+$/,
-                          message: "Invalid url format",
-                        },
-                      })}
-                      aria-invalid={errors.actualLink ? "true" : "false"}
-                      type="text"
-                      placeholder="Enter your url"
-                      className="w-full text-2xl bg-none outline-none "
-                    /> */}
                     </div>
                     {errors.actualLink && (
                       <p role="alert" className="text-red-500">

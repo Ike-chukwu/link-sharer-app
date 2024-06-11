@@ -15,7 +15,7 @@ const InputLink = (props: Props) => {
     const foundInfo = props.linkInfo.find((info) => info.id === props.id);
     return foundInfo ? foundInfo.link : "";
   });
-  
+
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
     const value = e.target.value;

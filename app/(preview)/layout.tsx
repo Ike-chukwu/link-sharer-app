@@ -1,26 +1,11 @@
 "use client";
-import Navbar from "@/app/components/Navbar";
-import PhoneMockup from "../icons/PhoneMockup";
 import PreviewNav from "../components/PreviewNav";
-import GithubIcon from "../icons/GithubIcon";
 import ChevronIcon from "../icons/ChevronIcon";
 import { userDataStore } from "@/app/store/userdatastore";
 import React, { useEffect, useState } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
 import { socialsArrayWithPosition } from "../constants";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  interface IFormInput {
-    firstName: string;
-    lastName: string;
-    email: string;
-  }
-
-  interface ProfileDetails extends IFormInput {
-    imgUrl: string;
-    selectedFile: any;
-  }
-
   const personalInfoHolder = userDataStore(
     (state: any) => state.userData.personalDetails
   );
@@ -29,7 +14,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     personalInfoHolder.selectedFile
   );
   const [imgUrl, setimgUrl] = useState<any>(personalInfoHolder.imgUrl);
-
+ 
   useEffect(() => {
     if (!selectedFile) {
       setimgUrl(undefined);
@@ -39,7 +24,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     setimgUrl(objectUrl);
 
     // free memory when ever this component is unmounted
-    console.log(imgUrl);
     return () => URL.revokeObjectURL(objectUrl);
   }, [selectedFile]);
 

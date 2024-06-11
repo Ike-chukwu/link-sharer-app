@@ -1,25 +1,13 @@
 "use client";
 import { socialsArrayWithPosition } from "@/app/constants";
 import ChevronIcon from "@/app/icons/ChevronIcon";
-import IconLink from "@/app/icons/IconLink";
-import PhoneMockup from "@/app/icons/PhoneMockup";
 import UploadIcon from "@/app/icons/UploadIcon";
 import { userDataStore } from "@/app/store/userdatastore";
+import { IFormInput, ProfileDetails } from "@/app/types";
 import React, { useEffect, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 
 const Profile = () => {
-  interface IFormInput {
-    firstName: string;
-    lastName: string;
-    email: string;
-  }
-
-  interface ProfileDetails extends IFormInput {
-    imgUrl: string;
-    selectedFile: any;
-  }
-
   const personalInfoHolder = userDataStore(
     (state: any) => state.userData.personalDetails
   );
@@ -46,8 +34,6 @@ const Profile = () => {
 
   // create a preview as a side effect, whenever selected file is changed
   useEffect(() => {
-    console.log(imgUrl);
-    
     if (!selectedFile) {
       setimgUrl(undefined);
       return;
@@ -55,10 +41,7 @@ const Profile = () => {
     const objectUrl = URL.createObjectURL(selectedFile);
     setimgUrl(objectUrl);
 
-    // free memory when ever this component is unmounted
-    console.log(imgUrl);
     return () => URL.revokeObjectURL(objectUrl);
-    
   }, [selectedFile]);
 
   const onSelectFile = (e: any) => {
@@ -327,11 +310,6 @@ const Profile = () => {
               ?.component("50", "546")}
             {linkInfo.length > 4 && <ChevronIcon x="240" y="548" />}
           </g>
-          {/* <rect width="237" height="44" x="35" y="278" fill="#EEE" rx="8" /> */}
-          {/* <rect width="237" height="44" x="35" y="342" fill="#EEE" rx="8" /> */}
-          {/* <rect width="237" height="44" x="35" y="406" fill="#EEE" rx="8" /> */}
-          {/* <rect width="237" height="44" x="35" y="470" fill="#EEE" rx="8" /> */}
-          {/* <rect width="237" height="44" x="35" y="534" fill="#EEE" rx="8" /> */}
         </svg>
       </div>
       <form
@@ -364,10 +342,7 @@ const Profile = () => {
                   )}
                 </div>
               )}
-              <label
-                // for="inputTag"
-                className="pointer relative z-3 text-ctaColor font-bold text-[12px] text-nowrap xl:text-2xl flex flex-col items-center justify-center"
-              >
+              <label className="pointer relative z-3 text-ctaColor font-bold text-[12px] text-nowrap xl:text-2xl flex flex-col items-center justify-center">
                 <UploadIcon />
                 + Upload Image <br />
                 <input

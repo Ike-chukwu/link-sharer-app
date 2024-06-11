@@ -1,21 +1,8 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import GithubIcon from "../icons/GithubIcon";
 import ChevronDown from "../icons/ChevronDown";
 import GithubGreyIcon from "../icons/GithubGreyIcon";
-import TwitterIcon from "@/app/icons/TwitterIcon";
-import FeMentorIcon from "../icons/FeMentorIcon";
-import LinkedinIcon from "../icons/LinkedinIcon";
-import Yt from "../icons/Yt";
-import Fb from "../icons/Fb";
-import Twitch from "../icons/Twitch";
-import Devto from "../icons/Devto";
-import Codewars from "../icons/Codewars";
-import Codepen from "../icons/Codepen";
-import FreeCodeCamp from "../icons/FreeCodeCamp";
-import Gitlab from "../icons/Gitlab";
-import Hashnode from "../icons/Hashnode";
-import StackOverflow from "../icons/StackOverflow";
+
 import { arrayofLinks } from "../(home)/link/page";
 import { socialsArray } from "../constants";
 
@@ -26,12 +13,10 @@ type Props = {
 };
 
 type selectedSocialArg = {
-  // id: Date;
   name: string;
 };
 
 const Dropdown = (props: Props) => {
-
   const [isDropdownActive, setDropdownActive] = useState(false);
 
   const [currentPlatform, setCurrentPlatform] = useState(() => {
@@ -107,7 +92,6 @@ const Dropdown = (props: Props) => {
             key={socialIcon.id}
             onClick={() =>
               selectSocialLink({
-                // id: new Date(),
                 name: socialIcon.name,
               })
             }
