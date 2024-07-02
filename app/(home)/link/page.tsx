@@ -10,11 +10,20 @@ import { v4 as uuidv4 } from "uuid";
 import { userDataStore } from "@/app/store/userdatastore";
 import { socialsArrayWithPosition } from "@/app/constants";
 import { linkInput, linkObjType } from "@/app/types";
+import withAuth from "@/app/components/ProtectedRoute";
 
 const Link = () => {
   const linksArray = userDataStore((state: any) => state.userData.listOfLinks);
+  const accessToken = userDataStore((state: any) => state.userData.accessToken);
+  const uniqueIdentifier = userDataStore(
+    (state: any) => state.userData.uniqueIdentifier
+  );
+
   const profileDetails = userDataStore(
     (state: any) => state.userData.personalDetails
+  );
+  const updateProfileDetailsHandler = userDataStore(
+    (state: any) => state.savePersonalDetails
   );
   const updatelistOfLinksArrayHandler = userDataStore(
     (state: any) => state.saveLink
@@ -27,7 +36,9 @@ const Link = () => {
     formState: { errors },
   } = useForm<linkInput>();
   const [selectedFile, setSelectedFile] = useState(profileDetails.selectedFile);
-  const [imgUrl, setimgUrl] = useState<any>(profileDetails.imgUrl);
+  const [imgUrl, setimgUrl] = useState<any>(profileDetails.imageUrl);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<null | string>(null);
 
   const addNewLinkHandler = () => {
     if (linkInfo.length >= 5) {
@@ -49,15 +60,28 @@ const Link = () => {
     setLinkInfo(filteredArray);
   };
 
+  const persistData = async (data: any) => {
+    const response = await fetch("http://localhost:3500/userData", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    const dataReceived = await response.json();
+    // console.log(dataReceived);
+  };
+
   const saveData = (e: any) => {
     e.preventDefault();
     updatelistOfLinksArrayHandler(linkInfo);
+    persistData(linkInfo);
   };
 
   useEffect(() => {
     setLinkInfo(linksArray);
-    console.log(linkInfo);
-    console.log(linksArray);
     // Update linkInfo whenever linksArray changes
   }, [linksArray]);
 
@@ -66,13 +90,79 @@ const Link = () => {
       setimgUrl(undefined);
       return;
     }
+    console.log(profileDetails.selectedFile);
+
     const objectUrl = URL.createObjectURL(profileDetails.selectedFile);
+    console.log(objectUrl);
+
     setimgUrl(objectUrl);
 
     // free memory when ever this component is unmounted
     return () => URL.revokeObjectURL(objectUrl);
   }, [selectedFile]);
 
+  useEffect(() => {
+    const fetchUserDetail = async () => {
+      try {
+        const response = await fetch("http://localhost:3500/userData", {
+          method: "GET",
+          headers: {
+            "Content-type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        if (!response.ok) {
+          throw new Error("An error has occurred");
+        }
+
+        const dataReceived = await response.json();
+        const {
+          email,
+          firstName,
+          lastName,
+          imageUrl,
+          selectedFile: selectedFilePath,
+        } = dataReceived;
+        const newObj = {
+          email,
+          firstName,
+          lastName,
+          imageUrl,
+          selectedFile: null,
+        };
+        setError(null);
+        updatelistOfLinksArrayHandler(dataReceived.listOfLinks);
+        console.log(selectedFilePath);
+        console.log(imageUrl);
+
+        // Fetch the file as a Blob
+        if (selectedFilePath) {
+          const fileResponse = await fetch(
+            `http://localhost:3500/images/${selectedFilePath}`
+          );
+          if (!fileResponse.ok) {
+            throw new Error("Failed to fetch the file");
+          }
+          const fileBlob = await fileResponse.blob();
+          const file = new File([fileBlob], selectedFilePath);
+          newObj.selectedFile = file;
+          setSelectedFile(file);
+        }
+
+        updateProfileDetailsHandler(newObj);
+      } catch (error) {
+        setError("An error has occurred!");
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserDetail();
+  }, []);
+
+  if (loading) return <p style={{ fontSize: "32px" }}>Loading</p>;
+  if (error) return <p style={{ fontSize: "32px" }}>An error occured</p>;
   return (
     <div className="px-8 lg:px-0 flex gap-10 items-start">
       <div className="hidden lg:flex w-2/5 rounded-xl items-center justify-center min-h-[800px] p-10 bg-white">
@@ -92,7 +182,8 @@ const Link = () => {
             stroke="#737373"
             d="M12 55.5C12 30.923 31.923 11 56.5 11h24C86.851 11 92 16.149 92 22.5c0 8.008 6.492 14.5 14.5 14.5h95c8.008 0 14.5-6.492 14.5-14.5 0-6.351 5.149-11.5 11.5-11.5h24c24.577 0 44.5 19.923 44.5 44.5v521c0 24.577-19.923 44.5-44.5 44.5h-195C31.923 621 12 601.077 12 576.5v-521Z"
           />
-          {profileDetails.imgUrl == undefined && imgUrl == undefined ? (
+          {(profileDetails.imgUrl == undefined && imgUrl == undefined) ||
+          (profileDetails.imgUrl == "" && imgUrl == "") ? (
             <circle cx="153.5" cy="112" r="48" fill="#EEE" />
           ) : (
             <>
@@ -104,7 +195,7 @@ const Link = () => {
               <image
                 width="500"
                 height="350"
-                xlinkHref={imgUrl}
+                xlinkHref={`${imgUrl}`}
                 clip-path="url(#myCircle)"
               />
             </>
@@ -439,4 +530,4 @@ const Link = () => {
   );
 };
 
-export default Link;
+export default withAuth(Link);

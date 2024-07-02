@@ -1,4 +1,5 @@
 "use client";
+import withAuth from "@/app/components/ProtectedRoute";
 import { socialsArrayWithPosition } from "@/app/constants";
 import ChevronIcon from "@/app/icons/ChevronIcon";
 import UploadIcon from "@/app/icons/UploadIcon";
@@ -11,6 +12,7 @@ const Profile = () => {
   const personalInfoHolder = userDataStore(
     (state: any) => state.userData.personalDetails
   );
+  const accessToken = userDataStore((state: any) => state.userData.accessToken);
 
   const linkInfo = userDataStore((state: any) => state.userData.listOfLinks);
 
@@ -28,9 +30,10 @@ const Profile = () => {
   const [selectedFile, setSelectedFile] = useState(
     personalInfoHolder.selectedFile
   );
-  const [imgUrl, setimgUrl] = useState<any>(personalInfoHolder.imgUrl);
+  const [imgUrl, setimgUrl] = useState<any>(personalInfoHolder.imageUrl);
   const [finalValuesFromForm, setFinalValuesFrom] =
     useState<ProfileDetails>(personalInfoHolder);
+  console.log(personalInfoHolder);
 
   // create a preview as a side effect, whenever selected file is changed
   useEffect(() => {
@@ -49,13 +52,36 @@ const Profile = () => {
       setSelectedFile(undefined);
       return;
     }
+    console.log(e.target.files[0]);
+
     setSelectedFile(e.target.files[0]);
   };
 
-  const onSubmit: SubmitHandler<IFormInput> = (data) => {
+  const onSubmit: SubmitHandler<IFormInput | any> = async (data) => {
     const finalValuesFromForm = { ...data, imgUrl, selectedFile };
+    console.log(imgUrl);
+
+    const formdata = new FormData();
+    formdata.append("file", selectedFile);
+    formdata.append("email", data.email);
+    formdata.append("firstName", data.firstName);
+    formdata.append("lastName", data.lastName);
+    formdata.append("imageUrl", imgUrl);
+
+    console.log(formdata);
+
     setFinalValuesFrom(finalValuesFromForm);
     updateProfileDetailsHandler(finalValuesFromForm);
+    const response = await fetch("http://localhost:3500/userProfileDetails", {
+      method: "POST",
+      headers: {
+        // "Content-type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: formdata,
+    });
+    const dataReceived = await response.json();
+    console.log(dataReceived);
   };
 
   const watchFirstName = watch("firstName") || "";
@@ -82,7 +108,7 @@ const Profile = () => {
             d="M12 55.5C12 30.923 31.923 11 56.5 11h24C86.851 11 92 16.149 92 22.5c0 8.008 6.492 14.5 14.5 14.5h95c8.008 0 14.5-6.492 14.5-14.5 0-6.351 5.149-11.5 11.5-11.5h24c24.577 0 44.5 19.923 44.5 44.5v521c0 24.577-19.923 44.5-44.5 44.5h-195C31.923 621 12 601.077 12 576.5v-521Z"
           />
 
-          {finalValuesFromForm.imgUrl == undefined && imgUrl == undefined ? (
+          {finalValuesFromForm.imageUrl == undefined && imgUrl == undefined ? (
             <circle cx="153.5" cy="112" r="48" fill="#EEE" />
           ) : (
             <>
@@ -94,7 +120,7 @@ const Profile = () => {
               <image
                 width="500"
                 height="350"
-                xlinkHref={imgUrl}
+                xlinkHref={`${imgUrl}`}
                 clip-path="url(#myCircle)"
               />
             </>
@@ -463,4 +489,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default withAuth(Profile);

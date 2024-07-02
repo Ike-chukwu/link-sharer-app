@@ -15,7 +15,9 @@ export const userDataStore = create((set) => ({
             email: "",
             imageUrl: "",
             selectedFile: ""
-        }
+        },
+        accessToken: "",
+        uniqueIdentifier: ""
     },
     saveLink: (linkList: any) => {
         set((state: any) => ({
@@ -25,12 +27,28 @@ export const userDataStore = create((set) => ({
             }
         }));
     },
+    setAccessToken: (token: any) => {
+        set((state: any) => ({
+            userData: {
+                ...state.userData,
+                accessToken: token
+            }
+        }));
+    },
+    setUniqueIdentifier: (id: any) => {
+        set((state: any) => ({
+            userData: {
+                ...state.userData,
+               uniqueIdentifier: id
+            }
+        }));
+    },
     savePersonalDetails: (detail: any) => set((state: any) => ({
         userData: {
             ...state.userData,
             personalDetails: detail
         }
-    }))
+    })),
 
 }
 

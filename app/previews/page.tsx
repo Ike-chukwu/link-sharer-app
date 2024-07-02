@@ -1,7 +1,7 @@
 import React from "react";
 
-const Previ = () => {
+const Dage = () => {
   return <div>page</div>;
 };
 
-export default Previ;
+export default Dage;

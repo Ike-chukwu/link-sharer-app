@@ -7,10 +7,13 @@ import IconLink from "../icons/IconLink";
 import ProfileDetailsIcon from "../icons/ProfileDetailsIcon";
 import PreviewIcon from "../icons/PreviewIcon";
 import { usePathname } from "next/navigation";
+import { userDataStore } from "../store/userdatastore";
 
 const Navbar = () => {
   const pathname = usePathname();
-
+  const uniqueIdentifier = userDataStore(
+    (state: any) => state.userData.uniqueIdentifier
+  );
   return (
     <nav className="flex justify-between items-center relative w-full mx-auto px-8 bg-white py-8 rounded-xl">
       <Logo />
@@ -57,7 +60,7 @@ const Navbar = () => {
         </Link>
       </div>
 
-      <Link href="/preview">
+      <Link href={`/previews/${uniqueIdentifier}`}>
         <button className="outline-none hidden lg:block">
           <span className="text-2xl transition ease-in-out duration-[.5s] hover:bg-[#EFEBFF] text-ctaColor capitalize border-[1px] border-ctaColor rounded-xl font-bold px-10 py-4">
             preview

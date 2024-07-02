@@ -9,6 +9,9 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Password from "../icons/Password";
+import Email from "../icons/Email";
+import { SyntheticEvent, useState } from "react";
 // import { useRouter } from "next/navigation";
 
 export default function Home() {
@@ -30,12 +33,38 @@ export default function Home() {
     handleSubmit,
     formState: { errors },
   } = useForm<SignUpSchemaType>({ resolver: zodResolver(SignUpSchema) });
+  const [error, setError] = useState<null | string>(null);
 
   const router = useRouter();
+  // const createNewUser = async (data: any) => {
 
-  const onSubmit: SubmitHandler<SignUpSchemaType> = (data) => {
+  // };
+
+  const onSubmit: SubmitHandler<SignUpSchemaType> = async (
+    // e: SyntheticEvent<HTMLFormElement, SubmitEvent>,
+    data
+  ) => {
+    // e.preventDefault();
     console.log(data);
-    // router.push("/s");
+    try {
+      const response = await fetch("http://localhost:3500/register", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        throw new Error("An error has occured");
+      }
+      const dataReceived = await response.json();
+      console.log(dataReceived);
+      setError(null);
+      router.push("/");
+    } catch (error) {
+      setError("An error has occcured!");
+      console.log(error);
+    }
   };
 
   return (
@@ -62,7 +91,7 @@ export default function Home() {
                 (errors.email && "border-2 border-red-500")
               }
             >
-              <GithubGreyIcon />
+              <Email />
               <input
                 type="text"
                 placeholder="e.g.alex@email.com"
@@ -82,7 +111,7 @@ export default function Home() {
                 (errors.password && "border-2 border-red-500")
               }
             >
-              <GithubGreyIcon />
+              <Password />
               <input
                 type="text"
                 placeholder="At least 3 characters"
@@ -102,7 +131,7 @@ export default function Home() {
                 (errors.confirmPassword && "border-2 border-red-500")
               }
             >
-              <GithubGreyIcon />
+              <Password />
               <input
                 type="text"
                 placeholder="At least 3 characters"

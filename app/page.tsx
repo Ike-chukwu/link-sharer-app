@@ -9,6 +9,10 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Email from "./icons/Email";
+import Password from "./icons/Password";
+import { useState } from "react";
+import { userDataStore } from "./store/userdatastore";
 // import { useRouter } from "next/navigation";
 
 export default function Home() {
@@ -24,12 +28,37 @@ export default function Home() {
     handleSubmit,
     formState: { errors },
   } = useForm<SignInSchemaType>({ resolver: zodResolver(SignInSchema) });
+  const [error, setError] = useState<null | string>(null);
 
   const router = useRouter();
+  const accessToken = userDataStore((state: any) => state.userData.accessToken);
+  const updateAccessToken = userDataStore((state: any) => state.setAccessToken);
+  const updateUniqueIdentifier = userDataStore((state: any) => state.setUniqueIdentifier);
 
-  const onSubmit: SubmitHandler<SignInSchemaType> = (data) => {
+  const onSubmit: SubmitHandler<SignInSchemaType> = async (data) => {
     console.log(data);
-    router.push("/signup");
+    try {
+      const response = await fetch("http://localhost:3500/login", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        throw new Error("An error has occured");
+      }
+      const dataReceived = await response.json();
+      console.log(dataReceived.accessToken);
+      console.log(dataReceived.uniqueIdentifier);
+      updateAccessToken(dataReceived.accessToken);
+      updateUniqueIdentifier(dataReceived.uniqueIdentifier)
+      setError(null);
+      router.push("/link");
+    } catch (error) {
+      setError("An error has occcured!");
+      console.log(error);
+    }
   };
 
   return (
@@ -54,7 +83,7 @@ export default function Home() {
                 (errors.email && "border-2 border-red-500")
               }
             >
-              <GithubGreyIcon />
+              <Email />
               <input
                 type="text"
                 placeholder="e.g.alex@email.com"
@@ -74,7 +103,7 @@ export default function Home() {
                 (errors.password && "border-2 border-red-500")
               }
             >
-              <GithubGreyIcon />
+              <Password />
               <input
                 type="text"
                 placeholder="Enter your password"

@@ -5,7 +5,7 @@ export interface IFormInput {
 }
 
 export interface ProfileDetails extends IFormInput {
-  imgUrl: string;
+  imageUrl: string;
   selectedFile: any;
 }
 
