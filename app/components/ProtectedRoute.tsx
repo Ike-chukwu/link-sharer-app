@@ -2,8 +2,11 @@ import { ReactElement, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ComponentType } from "react";
 import { userDataStore } from "../store/userdatastore";
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
+import Loader from "../components/Loader.json";
+import dynamic from "next/dynamic";
 
-const withAuth = <P extends object>(WrappedComponent: ComponentType<P>) => {
+const WithAuth = <P extends object>(WrappedComponent: ComponentType<P>) => {
   const ComponentWithAuth = (props: P) => {
     const accessToken = userDataStore(
       (state: any) => state.userData.accessToken
@@ -18,7 +21,7 @@ const withAuth = <P extends object>(WrappedComponent: ComponentType<P>) => {
 
     // Show loading while the authentication status is being checked
     if (!accessToken) {
-      return <div>Loading...</div>; // or a loading spinner
+      return <Lottie animationData={Loader} />; // or a loading spinner
     }
 
     return <WrappedComponent {...props} />;
@@ -27,4 +30,4 @@ const withAuth = <P extends object>(WrappedComponent: ComponentType<P>) => {
   return ComponentWithAuth;
 };
 
-export default withAuth;
+export default WithAuth;

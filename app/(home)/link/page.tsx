@@ -10,14 +10,15 @@ import { v4 as uuidv4 } from "uuid";
 import { userDataStore } from "@/app/store/userdatastore";
 import { socialsArrayWithPosition } from "@/app/constants";
 import { linkInput, linkObjType } from "@/app/types";
-import withAuth from "@/app/components/ProtectedRoute";
+import WithAuth from "@/app/components/ProtectedRoute";
+import { useRouter } from "next/navigation";
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
+import Loader from "../../components/Loader.json";
+import dynamic from "next/dynamic";
 
 const Link = () => {
   const linksArray = userDataStore((state: any) => state.userData.listOfLinks);
   const accessToken = userDataStore((state: any) => state.userData.accessToken);
-  const uniqueIdentifier = userDataStore(
-    (state: any) => state.userData.uniqueIdentifier
-  );
 
   const profileDetails = userDataStore(
     (state: any) => state.userData.personalDetails
@@ -28,6 +29,7 @@ const Link = () => {
   const updatelistOfLinksArrayHandler = userDataStore(
     (state: any) => state.saveLink
   );
+  const router = useRouter();
 
   const [linkInfo, setLinkInfo] = useState(linksArray);
   const {
@@ -35,11 +37,14 @@ const Link = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<linkInput>();
-  const [selectedFile, setSelectedFile] = useState(profileDetails.selectedFile);
+  const [selectedFile, setSelectedFile] = useState<any | null>(
+    profileDetails.selectedFile
+  );
   const [imgUrl, setimgUrl] = useState<any>(profileDetails.imageUrl);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<null | string>(null);
-
+  const [isSaved, setIsSaved] = useState(false);
+  const [isSavedError, setIsSavedError] = useState<null | String>(null);
   const addNewLinkHandler = () => {
     if (linkInfo.length >= 5) {
       return;
@@ -61,17 +66,28 @@ const Link = () => {
   };
 
   const persistData = async (data: any) => {
-    const response = await fetch("http://localhost:3500/userData", {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-      body: JSON.stringify(data),
-    });
-
-    const dataReceived = await response.json();
-    // console.log(dataReceived);
+    setIsSaved(true);
+    try {
+      const response = await fetch(
+        "https://link-sharer-be.onrender.com/userData",
+        {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify(data),
+        }
+      );
+      if (!response.ok) {
+        throw new Error("An error occured");
+      }
+      const dataReceived = await response.json();
+    } catch (error) {
+      setIsSavedError("An error occured");
+    } finally {
+      setIsSaved(false);
+    }
   };
 
   const saveData = (e: any) => {
@@ -82,7 +98,6 @@ const Link = () => {
 
   useEffect(() => {
     setLinkInfo(linksArray);
-    // Update linkInfo whenever linksArray changes
   }, [linksArray]);
 
   useEffect(() => {
@@ -90,7 +105,6 @@ const Link = () => {
       setimgUrl(undefined);
       return;
     }
-    console.log(profileDetails.selectedFile);
 
     const objectUrl = URL.createObjectURL(profileDetails.selectedFile);
     console.log(objectUrl);
@@ -104,13 +118,16 @@ const Link = () => {
   useEffect(() => {
     const fetchUserDetail = async () => {
       try {
-        const response = await fetch("http://localhost:3500/userData", {
-          method: "GET",
-          headers: {
-            "Content-type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
+        const response = await fetch(
+          "https://link-sharer-be.onrender.com/userData",
+          {
+            method: "GET",
+            headers: {
+              "Content-type": "application/json",
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
         if (!response.ok) {
           throw new Error("An error has occurred");
         }
@@ -128,17 +145,15 @@ const Link = () => {
           firstName,
           lastName,
           imageUrl,
-          selectedFile: null,
+          selectedFile,
         };
         setError(null);
         updatelistOfLinksArrayHandler(dataReceived.listOfLinks);
-        console.log(selectedFilePath);
-        console.log(imageUrl);
 
         // Fetch the file as a Blob
         if (selectedFilePath) {
           const fileResponse = await fetch(
-            `http://localhost:3500/images/${selectedFilePath}`
+            `https://link-sharer-be.onrender.com/images/${selectedFilePath}`
           );
           if (!fileResponse.ok) {
             throw new Error("Failed to fetch the file");
@@ -161,8 +176,21 @@ const Link = () => {
     fetchUserDetail();
   }, []);
 
-  if (loading) return <p style={{ fontSize: "32px" }}>Loading</p>;
-  if (error) return <p style={{ fontSize: "32px" }}>An error occured</p>;
+  if (loading) return <Lottie animationData={Loader} />;
+  if (error)
+    return (
+      <div className="flex items-center justify-center flex-col min-h-[100vh] gap-[2rem]">
+        <p className="text-[40px] font-bold text-ctaColor ">Oops!</p>
+        <p className="text-[18px] text-ctaColor">An error occured!</p>
+        <button
+          onClick={() => router.push("/")}
+          type="submit"
+          className=" transition-opacity duration-[0.4s] hover:opacity-40  bg-ctaColor text-white text-2xl rounded-xl py-5 px-12 capitalize font-bold"
+        >
+          GO TO LOGIN PAGE
+        </button>
+      </div>
+    );
   return (
     <div className="px-8 lg:px-0 flex gap-10 items-start">
       <div className="hidden lg:flex w-2/5 rounded-xl items-center justify-center min-h-[800px] p-10 bg-white">
@@ -173,6 +201,7 @@ const Link = () => {
           fill="none"
           viewBox="0 0 308 632"
         >
+          <Lottie animationData={Loader} />
           <path
             stroke="#737373"
             d="M1 54.5C1 24.953 24.953 1 54.5 1h199C283.047 1 307 24.953 307 54.5v523c0 29.547-23.953 53.5-53.5 53.5h-199C24.953 631 1 607.047 1 577.5v-523Z"
@@ -522,12 +551,20 @@ const Link = () => {
             type="submit"
             className="absolute right-8 left-8 lg:right-16 lg:left-auto transition-opacity duration-[0.4s] hover:opacity-40  bg-ctaColor text-white text-2xl rounded-xl py-5 px-12 capitalize font-bold"
           >
-            save
+            {isSaved ? "saving..." : "save"}
           </button>
         </div>
       </form>
+      {/* <div
+        className={
+          "absolute left-[50%] translate-x-[-50%] bg-black text-white text-[16px] rounded-xl py-5 px-12 transition-all ease-linear duration-300 " +
+          (isSaved ? "bottom-[4%] opacity-1" : "bottom-[2%] opacity-0")
+        }
+      >
+        Your changes have been successfully saved!
+      </div> */}
     </div>
   );
 };
 
-export default withAuth(Link);
+export default WithAuth(Link);

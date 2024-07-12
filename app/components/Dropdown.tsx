@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import ChevronDown from "../icons/ChevronDown";
 import GithubGreyIcon from "../icons/GithubGreyIcon";
 
-import { arrayofLinks } from "../(home)/link/page";
+import { arrayofLinks } from "../types";
 import { socialsArray } from "../constants";
 
 type Props = {

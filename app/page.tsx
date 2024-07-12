@@ -1,8 +1,4 @@
 "use client";
-import Image from "next/image";
-import Logo from "./icons/Logo";
-import GithubIcon from "./icons/GithubIcon";
-import GithubGreyIcon from "./icons/GithubGreyIcon";
 import LargeIcon from "./icons/LargeIcon";
 import { z } from "zod";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -13,7 +9,6 @@ import Email from "./icons/Email";
 import Password from "./icons/Password";
 import { useState } from "react";
 import { userDataStore } from "./store/userdatastore";
-// import { useRouter } from "next/navigation";
 
 export default function Home() {
   const SignInSchema = z.object({
@@ -29,16 +24,18 @@ export default function Home() {
     formState: { errors },
   } = useForm<SignInSchemaType>({ resolver: zodResolver(SignInSchema) });
   const [error, setError] = useState<null | string>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const router = useRouter();
-  const accessToken = userDataStore((state: any) => state.userData.accessToken);
   const updateAccessToken = userDataStore((state: any) => state.setAccessToken);
-  const updateUniqueIdentifier = userDataStore((state: any) => state.setUniqueIdentifier);
+  const updateUniqueIdentifier = userDataStore(
+    (state: any) => state.setUniqueIdentifier
+  );
 
   const onSubmit: SubmitHandler<SignInSchemaType> = async (data) => {
-    console.log(data);
+    setLoading(true);
     try {
-      const response = await fetch("http://localhost:3500/login", {
+      const response = await fetch("https://link-sharer-be.onrender.com/login", {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -49,20 +46,19 @@ export default function Home() {
         throw new Error("An error has occured");
       }
       const dataReceived = await response.json();
-      console.log(dataReceived.accessToken);
-      console.log(dataReceived.uniqueIdentifier);
       updateAccessToken(dataReceived.accessToken);
-      updateUniqueIdentifier(dataReceived.uniqueIdentifier)
+      updateUniqueIdentifier(dataReceived.uniqueIdentifier);
       setError(null);
       router.push("/link");
     } catch (error) {
       setError("An error has occcured!");
-      console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="px-8 lg:px-0 flex flex-col items-center min-h-[100vh] justify-center gap-8 lg:gap-24">
+    <div className="px-8 landscape:py-[5rem] lg:px-0 flex flex-col items-center min-h-[100vh] justify-center gap-8 lg:gap-24">
       <LargeIcon />
       <form
         onSubmit={handleSubmit(onSubmit)}
@@ -105,7 +101,7 @@ export default function Home() {
             >
               <Password />
               <input
-                type="text"
+                type="password"
                 placeholder="Enter your password"
                 className="text-2xl w-full outline-none "
                 {...register("password")}
@@ -120,7 +116,7 @@ export default function Home() {
             type="submit"
             className="bg-ctaColor text-white w-full rounded-xl py-6 text-2xl"
           >
-            Login
+            {loading ? "Loading..." : "Login"}
           </button>
 
           <p className="text-2xl text-bodyCopyColor text-center ">
@@ -129,6 +125,9 @@ export default function Home() {
               <span className="text-[#beadff]">Create account</span>
             </Link>
           </p>
+          {error && (
+            <p className="text-2xl text-red-500 text-center">{error}</p>
+          )}
         </div>
       </form>
     </div>

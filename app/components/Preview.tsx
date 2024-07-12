@@ -44,7 +44,7 @@ const Preview = () => {
           <p className="text-2xl text-[#7B7B7B]">{personalInfoHolder?.email}</p>
         </div>
         <div className="flex gap-4 flex-col">
-          {linkInfo.slice(0, 5).map((link, index) => {
+          {linkInfo.slice(0, 5).map((link: string | any, index: string) => {
             const socialPlatform = socialsArrayWithPosition.find(
               (platform) => platform.name === link.platform
             );

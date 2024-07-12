@@ -69,7 +69,7 @@ const Navbar = () => {
       </Link>
 
       <Link
-        href="/preview"
+        href={`/previews/${uniqueIdentifier}`}
         className="block lg:hidden border-[1px] border-ctaColor py-2 px-4 rounded-xl pointer"
       >
         <PreviewIcon />

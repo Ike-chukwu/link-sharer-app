@@ -1,5 +1,5 @@
 "use client";
-import withAuth from "@/app/components/ProtectedRoute";
+import WithAuth from "@/app/components/ProtectedRoute";
 import { socialsArrayWithPosition } from "@/app/constants";
 import ChevronIcon from "@/app/icons/ChevronIcon";
 import UploadIcon from "@/app/icons/UploadIcon";
@@ -34,6 +34,8 @@ const Profile = () => {
   const [finalValuesFromForm, setFinalValuesFrom] =
     useState<ProfileDetails>(personalInfoHolder);
   console.log(personalInfoHolder);
+  const [isSaved, setIsSaved] = useState(false);
+  const [isSavedError, setIsSavedError] = useState<null | String>(null);
 
   // create a preview as a side effect, whenever selected file is changed
   useEffect(() => {
@@ -58,30 +60,37 @@ const Profile = () => {
   };
 
   const onSubmit: SubmitHandler<IFormInput | any> = async (data) => {
+    setIsSaved(true);
     const finalValuesFromForm = { ...data, imgUrl, selectedFile };
-    console.log(imgUrl);
-
     const formdata = new FormData();
     formdata.append("file", selectedFile);
     formdata.append("email", data.email);
     formdata.append("firstName", data.firstName);
     formdata.append("lastName", data.lastName);
     formdata.append("imageUrl", imgUrl);
-
-    console.log(formdata);
-
     setFinalValuesFrom(finalValuesFromForm);
     updateProfileDetailsHandler(finalValuesFromForm);
-    const response = await fetch("http://localhost:3500/userProfileDetails", {
-      method: "POST",
-      headers: {
-        // "Content-type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-      body: formdata,
-    });
-    const dataReceived = await response.json();
-    console.log(dataReceived);
+    try {
+      const response = await fetch(
+        "https://link-sharer-be.onrender.com/userProfileDetails",
+        {
+          method: "POST",
+          headers: {
+            // "Content-type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: formdata,
+        }
+      );
+      if (!response.ok) {
+        throw new Error("An error occured");
+      }
+      const dataReceived = await response.json();
+    } catch (error) {
+      setIsSavedError("An error occured");
+    } finally {
+      setIsSaved(false);
+    }
   };
 
   const watchFirstName = watch("firstName") || "";
@@ -481,7 +490,7 @@ const Profile = () => {
             type="submit"
             className="absolute left-8 right-8 lg:right-16 lg:left-auto transition-opacity duration-[0.4s] hover:opacity-40 bg-ctaColor text-white text-2xl rounded-xl py-5 px-12 capitalize font-bold"
           >
-            save
+            {isSaved ? "saving..." : "save"}
           </button>
         </div>
       </form>
@@ -489,4 +498,4 @@ const Profile = () => {
   );
 };
 
-export default withAuth(Profile);
+export default WithAuth(Profile);

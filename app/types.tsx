@@ -6,7 +6,7 @@ export interface IFormInput {
 
 export interface ProfileDetails extends IFormInput {
   imageUrl: string;
-  selectedFile: any;
+  selectedFile: any | null;
 }
 
 export type arrayofLinks = {

@@ -5,6 +5,8 @@ import { userDataStore } from "@/app/store/userdatastore";
 import React, { useEffect, useState } from "react";
 import { socialsArrayWithPosition } from "@/app/constants";
 import { useRouter } from "next/navigation";
+import Lottie from "lottie-react";
+import Loader from "../../components/Loader.json";
 
 const Previewse = ({ params }: any) => {
   const personalInfoHolder = userDataStore(
@@ -26,18 +28,16 @@ const Previewse = ({ params }: any) => {
   const updateUniqueIdentifier = userDataStore(
     (state: any) => state.setUniqueIdentifier
   );
+  const router = useRouter();
 
   const [imgUrl, setImgUrl] = useState(personalInfoHolder.imageUrl);
   const [loading, setIsLoading] = useState(true);
   const [error, setIsError] = useState<null | string>(null);
 
-  console.log(personalInfoHolder);
-  console.log(linkInfo);
-
   useEffect(() => {
     const fetchUserDetail = async (id: any) => {
       try {
-        const response = await fetch("http://localhost:3500/previewUserData", {
+        const response = await fetch("https://link-sharer-be.onrender.com/previewUserData", {
           method: "GET",
           headers: {
             "Content-type": "application/json",
@@ -60,14 +60,14 @@ const Previewse = ({ params }: any) => {
           firstName,
           lastName,
           imageUrl,
-          selectedFile: null,
+          selectedFile,
         };
         setIsError(null);
         updatelistOfLinksArrayHandler(dataReceived.listOfLinks);
         // Fetch the file as a Blob
         if (selectedFilePath) {
           const fileResponse = await fetch(
-            `http://localhost:3500/images/${selectedFilePath}`
+            `https://link-sharer-be.onrender.com/images/${selectedFilePath}`
           );
           if (!fileResponse.ok) {
             throw new Error("Failed to fetch the file");
@@ -81,7 +81,6 @@ const Previewse = ({ params }: any) => {
         updateProfileDetailsHandler(newObj);
       } catch (error) {
         setIsError("An error has occcured!");
-        console.log(error);
       } finally {
         setIsLoading(false);
       }
@@ -111,8 +110,21 @@ const Previewse = ({ params }: any) => {
     return () => URL.revokeObjectURL(objectUrl);
   }, [selectedFile, personalInfoHolder.selectedFile]);
 
-  if (loading) return <p style={{ fontSize: "32px" }}>Loading</p>;
-  if (error) return <p style={{ fontSize: "32px" }}>An error occured</p>;
+  if (loading) return <Lottie animationData={Loader} />;
+  if (error)
+    return (
+      <div className="flex items-center justify-center flex-col min-h-[100vh] gap-[2rem]">
+        <p className="text-[40px] font-bold text-ctaColor ">Oops!</p>
+        <p className="text-[18px] text-ctaColor">An error occured!</p>
+        <button
+          onClick={() => router.push("/")}
+          type="submit"
+          className=" transition-opacity duration-[0.4s] hover:opacity-40  bg-ctaColor text-white text-2xl rounded-xl py-5 px-12 capitalize font-bold"
+        >
+          GO TO LOGIN PAGE
+        </button>
+      </div>
+    );
   return (
     <div className="lg:bg-[#FAFAFA] relative min-h-[100vh] ">
       <div className=" lg:bg-ctaColor pt-8 lg:pb-96 lg:rounded-bl-[3rem] lg:rounded-br-[3rem] ">
@@ -130,7 +142,7 @@ const Previewse = ({ params }: any) => {
           <p className="text-2xl text-[#7B7B7B]">{personalInfoHolder?.email}</p>
         </div>
         <div className="flex gap-4 flex-col">
-          {linkInfo.slice(0, 5).map((link, index) => {
+          {linkInfo.slice(0, 5).map((link: string | any, index: string) => {
             const socialPlatform = socialsArrayWithPosition.find(
               (platform) => platform.name === link.platform
             );
