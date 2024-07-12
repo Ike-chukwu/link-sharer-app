@@ -7,11 +7,13 @@ import IconLink from "../icons/IconLink";
 import ProfileDetailsIcon from "../icons/ProfileDetailsIcon";
 import PreviewIcon from "../icons/PreviewIcon";
 import { usePathname } from "next/navigation";
+import { userDataStore } from "../store/userdatastore";
 
 const Navbar = () => {
-  const [activeLink, setActiveLink] = useState("links");
   const pathname = usePathname();
-
+  const uniqueIdentifier = userDataStore(
+    (state: any) => state.userData.uniqueIdentifier
+  );
   return (
     <nav className="flex justify-between items-center relative w-full mx-auto px-8 bg-white py-8 rounded-xl">
       <Logo />
@@ -24,13 +26,12 @@ const Navbar = () => {
               "px-10 py-5 transition ease-in-out duration-[.5s]  hover:bg-[#EFEBFF] outline-none flex items-center justify-center gap-3 rounded-xl " +
               (pathname === "/link" ? "bg-[#EFEBFF]" : null)
             }
-            onClick={() => setActiveLink("links")}
           >
-            <IconLink/>
+            <IconLink />
             <span
               className={
                 "hidden  lg:block text-2xl capitalize font-bold " +
-                (pathname === "links" ? "text-ctaColor" : "text-bodyCopyColor")
+                (pathname === "/link" ? "text-ctaColor" : "text-bodyCopyColor")
               }
             >
               links
@@ -43,10 +44,8 @@ const Navbar = () => {
               "px-10 transition ease-in-out duration-[.5s] hover:bg-[#EFEBFF] py-5 flex outline-none items-center gap-3 rounded-xl " +
               (pathname === "/profile" ? "bg-[#EFEBFF]" : null)
             }
-            onClick={() => setActiveLink("profile")}
           >
-            <ProfileDetailsIcon
-            />
+            <ProfileDetailsIcon />
             <span
               className={
                 "hidden lg:block text-2xl capitalize font-bold " +
@@ -61,7 +60,7 @@ const Navbar = () => {
         </Link>
       </div>
 
-      <Link href="/preview">
+      <Link href={`/previews/${uniqueIdentifier}`}>
         <button className="outline-none hidden lg:block">
           <span className="text-2xl transition ease-in-out duration-[.5s] hover:bg-[#EFEBFF] text-ctaColor capitalize border-[1px] border-ctaColor rounded-xl font-bold px-10 py-4">
             preview
@@ -70,7 +69,7 @@ const Navbar = () => {
       </Link>
 
       <Link
-        href="/preview"
+        href={`/previews/${uniqueIdentifier}`}
         className="block lg:hidden border-[1px] border-ctaColor py-2 px-4 rounded-xl pointer"
       >
         <PreviewIcon />

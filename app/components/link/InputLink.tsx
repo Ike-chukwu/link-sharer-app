@@ -1,5 +1,5 @@
 "use client";
-import { arrayofLinks } from "@/app/(home)/link/page";
+import { arrayofLinks } from "@/app/types";
 import React, { useState } from "react";
 
 type Props = {
@@ -11,7 +11,10 @@ type Props = {
 };
 
 const InputLink = (props: Props) => {
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState(() => {
+    const foundInfo = props.linkInfo.find((info: any) => info.id === props.id);
+    return foundInfo ? foundInfo.link : "";
+  });
 
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
@@ -27,7 +30,6 @@ const InputLink = (props: Props) => {
       concernedObjectCopy.link = value;
       linkInfoCopy[concernedObjectIndex] = concernedObjectCopy;
       props.setLinkInfo(linkInfoCopy);
-      console.log(props.linkInfo);
     }
   };
 

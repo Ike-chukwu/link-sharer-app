@@ -1,15 +1,13 @@
 "use client";
-import Image from "next/image";
-import Logo from "../icons/Logo";
-import GithubIcon from "../icons/GithubIcon";
-import GithubGreyIcon from "../icons/GithubGreyIcon";
 import LargeIcon from "../icons/LargeIcon";
 import { z } from "zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-// import { useRouter } from "next/navigation";
+import Password from "../icons/Password";
+import Email from "../icons/Email";
+import { SyntheticEvent, useState } from "react";
 
 export default function Home() {
   const SignUpSchema = z
@@ -30,16 +28,36 @@ export default function Home() {
     handleSubmit,
     formState: { errors },
   } = useForm<SignUpSchemaType>({ resolver: zodResolver(SignUpSchema) });
+  const [error, setError] = useState<null | string>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const router = useRouter();
 
-  const onSubmit: SubmitHandler<SignUpSchemaType> = (data) => {
-    console.log(data);
-    // router.push("/s");
+  const onSubmit: SubmitHandler<SignUpSchemaType> = async (data) => {
+    setLoading(true);
+    try {
+      const response = await fetch("https://link-sharer-be.onrender.com/register", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        throw new Error("An error has occured");
+      }
+      const dataReceived = await response.json();
+      setError(null);
+      router.push("/");
+    } catch (error) {
+      setError("An error has occcured!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="px-8 lg:px-0 flex flex-col items-center min-h-[100vh] justify-center gap-8 lg:gap-24">
+    <div className="px-8 landscape:py-[5rem] lg:px-0 flex flex-col items-center min-h-[100vh] justify-center gap-8 lg:gap-24">
       <LargeIcon />
       <form
         onSubmit={handleSubmit(onSubmit)}
@@ -62,7 +80,7 @@ export default function Home() {
                 (errors.email && "border-2 border-red-500")
               }
             >
-              <GithubGreyIcon />
+              <Email />
               <input
                 type="text"
                 placeholder="e.g.alex@email.com"
@@ -82,9 +100,9 @@ export default function Home() {
                 (errors.password && "border-2 border-red-500")
               }
             >
-              <GithubGreyIcon />
+              <Password />
               <input
-                type="text"
+                type="password"
                 placeholder="At least 3 characters"
                 className="text-2xl w-full outline-none "
                 {...register("password")}
@@ -102,9 +120,9 @@ export default function Home() {
                 (errors.confirmPassword && "border-2 border-red-500")
               }
             >
-              <GithubGreyIcon />
+              <Password />
               <input
-                type="text"
+                type="password"
                 placeholder="At least 3 characters"
                 className="text-2xl w-full outline-none "
                 {...register("confirmPassword")}
@@ -121,7 +139,7 @@ export default function Home() {
             type="submit"
             className="bg-ctaColor text-white w-full rounded-xl py-6 text-2xl"
           >
-            Sign Up
+            {loading ? "Loading..." : "Sign Up"}
           </button>
 
           <p className="text-2xl text-bodyCopyColor text-center ">
@@ -130,6 +148,9 @@ export default function Home() {
               <span className="text-[#beadff]">Login</span>
             </Link>
           </p>
+          {error && (
+            <p className="text-2xl text-red-500 text-center">{error}</p>
+          )}
         </div>
       </form>
     </div>
