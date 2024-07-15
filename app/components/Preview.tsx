@@ -38,10 +38,10 @@ const Preview = () => {
             src={imgUrl}
             className="w-32 h-32 lg:w-40 lg:h-40 rounded-full bg-red-500 "
           />
-          <h2 className="text-4xl lg:text-[30px] font-bold ">
+          <h2 className="text-2xl lg:text-[30px] font-bold ">
             {personalInfoHolder?.firstName} {personalInfoHolder?.lastName}
           </h2>
-          <p className="text-2xl text-[#7B7B7B]">{personalInfoHolder?.email}</p>
+          <p className="text-xl text-[#7B7B7B]">{personalInfoHolder?.email}</p>
         </div>
         <div className="flex gap-4 flex-col">
           {linkInfo.slice(0, 5).map((link: string | any, index: string) => {

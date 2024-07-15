@@ -1,9 +1,23 @@
+"use client";
 import Link from "next/link";
 import React from "react";
+import { userDataStore } from "../store/userdatastore";
+import { useRouter } from "next/navigation";
 
 const Logo = () => {
+  const accessToken = userDataStore((state: any) => state.userData.accessToken);
+  const router = useRouter();
   return (
-    <Link href="/" className="hidden lg:block">
+    <Link
+      href=""
+      onClick={() => {
+        if (accessToken) {
+          return;
+        }
+        router.push("/");
+      }}
+      className="hidden lg:block"
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="140"

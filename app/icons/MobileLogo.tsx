@@ -1,9 +1,22 @@
 import Link from "next/link";
 import React from "react";
+import { userDataStore } from "../store/userdatastore";
+import { useRouter } from "next/navigation";
 
 const MobileLogo = () => {
+  const accessToken = userDataStore((state: any) => state.userData.accessToken);
+  const router = useRouter();
   return (
-    <Link href="/" className="block lg:hidden">
+    <Link
+      href=""
+      onClick={() => {
+        if (accessToken) {
+          return;
+        }
+        router.push("/");
+      }}
+      className="block lg:hidden"
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="32"
