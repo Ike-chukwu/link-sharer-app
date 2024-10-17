@@ -35,6 +35,7 @@ const Profile = () => {
     useState<ProfileDetails>(personalInfoHolder);
   console.log(personalInfoHolder);
   const [isSaved, setIsSaved] = useState(false);
+  const [showToast, setShowToast] = useState(false);
   const [isSavedError, setIsSavedError] = useState<null | String>(null);
 
   // create a preview as a side effect, whenever selected file is changed
@@ -86,12 +87,21 @@ const Profile = () => {
         throw new Error("An error occured");
       }
       const dataReceived = await response.json();
+      setShowToast(true);
     } catch (error) {
       setIsSavedError("An error occured");
     } finally {
       setIsSaved(false);
     }
   };
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setShowToast(false);
+    }, 3000);
+
+    return () => clearTimeout(timeout);
+  }, [showToast]);
 
   const watchFirstName = watch("firstName") || "";
   const watchLastName = watch("lastName") || "";
@@ -494,6 +504,14 @@ const Profile = () => {
           </button>
         </div>
       </form>
+      <div
+        className={
+          "absolute left-[50%] translate-x-[-50%] text-[10px] px-6 bg-black text-white lg:text-[16px] rounded-xl py-5 lg:px-12 transition-all ease-out duration-300 " +
+          (showToast ? "bottom-[4%] opacity-1" : "bottom-[2%] opacity-0")
+        }
+      >
+        Your changes have been successfully saved!
+      </div>
     </div>
   );
 };

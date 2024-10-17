@@ -44,6 +44,7 @@ const Link = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<null | string>(null);
   const [isSaved, setIsSaved] = useState(false);
+  const [showToast, setShowToast] = useState(false);
   const [isSavedError, setIsSavedError] = useState<null | String>(null);
   const addNewLinkHandler = () => {
     if (linkInfo.length >= 5) {
@@ -83,6 +84,7 @@ const Link = () => {
         throw new Error("An error occured");
       }
       const dataReceived = await response.json();
+      setShowToast(true);
     } catch (error) {
       setIsSavedError("An error occured");
     } finally {
@@ -175,6 +177,14 @@ const Link = () => {
 
     fetchUserDetail();
   }, []);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setShowToast(false);
+    }, 3000);
+
+    return () => clearTimeout(timeout);
+  }, [showToast]);
 
   if (loading) return <Lottie animationData={Loader} />;
   if (error)
@@ -548,6 +558,7 @@ const Link = () => {
         <div className="py-6 border-t-2 border-[#D9D9D9] absolute  bottom-[5rem] left-0 right-0">
           <button
             // onClick={saveData}
+            // disabled={isSaved? true:false}
             type="submit"
             className="absolute right-8 left-8 lg:right-16 lg:left-auto transition-opacity duration-[0.4s] hover:opacity-40  bg-ctaColor text-white text-2xl rounded-xl py-5 px-12 capitalize font-bold"
           >
@@ -555,14 +566,14 @@ const Link = () => {
           </button>
         </div>
       </form>
-      {/* <div
+      <div
         className={
-          "absolute left-[50%] translate-x-[-50%] bg-black text-white text-[16px] rounded-xl py-5 px-12 transition-all ease-linear duration-300 " +
-          (isSaved ? "bottom-[4%] opacity-1" : "bottom-[2%] opacity-0")
+          "absolute left-[50%] translate-x-[-50%] text-[10px] px-6 bg-black text-white lg:text-[16px] rounded-xl py-5 lg:px-12 transition-all ease-out duration-300 " +
+          (showToast ? "bottom-[4%] opacity-1" : "bottom-[2%] opacity-0")
         }
       >
         Your changes have been successfully saved!
-      </div> */}
+      </div>
     </div>
   );
 };
