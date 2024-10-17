@@ -35,13 +35,16 @@ export default function Home() {
   const onSubmit: SubmitHandler<SignInSchemaType> = async (data) => {
     setLoading(true);
     try {
-      const response = await fetch("https://link-sharer-be.onrender.com/login", {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      const response = await fetch(
+        "https://link-sharer-be.onrender.com/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+          },
+          body: JSON.stringify(data),
+        }
+      );
       if (!response.ok) {
         throw new Error("An error has occured");
       }
@@ -114,7 +117,11 @@ export default function Home() {
 
           <button
             type="submit"
-            className="bg-ctaColor text-white w-full rounded-xl py-6 text-2xl"
+            disabled={loading ? true : false}
+            className={
+              "bg-ctaColor text-white w-full rounded-xl py-6 text-2xl " +
+              (loading ? "opacity-80" : "opacity-100")
+            }
           >
             {loading ? "Loading..." : "Login"}
           </button>

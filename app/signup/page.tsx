@@ -137,8 +137,11 @@ export default function Home() {
 
           <button
             type="submit"
-            className="bg-ctaColor text-white w-full rounded-xl py-6 text-2xl"
-          >
+            disabled={loading ? true : false}
+            className={
+              "bg-ctaColor text-white w-full rounded-xl py-6 text-2xl " +
+              (loading ? "opacity-80" : "opacity-100")
+            }          >
             {loading ? "Loading..." : "Sign Up"}
           </button>
 
